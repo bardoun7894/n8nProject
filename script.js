@@ -21,6 +21,9 @@ class ProductForm {
         // Webhook URL - n8n Production Webhook
         this.webhookUrl = 'https://bardouni12.app.n8n.cloud/webhook/ugc-video';
         
+        // API Base URL - Configure this for your backend server
+        this.apiBaseUrl = this.getApiBaseUrl();
+        
         // Default values
         this.defaultValues = {
             userImageUrl: '',
@@ -32,6 +35,29 @@ class ProductForm {
         };
         
         this.init();
+    }
+    
+    getApiBaseUrl() {
+        // Check if we're running locally
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            return `${window.location.protocol}//${window.location.host}`;
+        }
+        
+        // For production, you need to set your backend server URL
+        // Replace this with your actual backend server URL when deployed
+        const BACKEND_URL = 'https://ugcn8n.netlify.app/'; // e.g., 'https://your-app.railway.app'
+        
+        if (BACKEND_URL === 'https://ugcn8n.netlify.app/') {
+            console.error('❌ BACKEND URL NOT CONFIGURED! This app requires a Node.js backend server.');
+            console.error('📋 Deploy options:');
+            console.error('   1. Railway: https://railway.app (recommended)');
+            console.error('   2. Render: https://render.com');
+            console.error('   3. Heroku: https://heroku.com');
+            console.error('💡 Then update BACKEND_URL in script.js with your deployed backend URL');
+            throw new Error('Backend server URL not configured. Please deploy the backend and update BACKEND_URL in script.js');
+        }
+        
+        return BACKEND_URL;
     }
     
     init() {
@@ -550,7 +576,7 @@ class ProductForm {
             const formData = new FormData();
             formData.append('image', file);
             
-            const response = await fetch('/api/upload', {
+            const response = await fetch(`${this.apiBaseUrl}/api/upload`, {
                 method: 'POST',
                 body: formData
             });

@@ -5,20 +5,30 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "build-css": "npx tailwindcss -i ./src.css -o ./style.css",
+    "build": "npm run build-css"
   },
-  "keywords": ["ugc", "video", "form", "n8n", "sqlite", "express"],
+  "keywords": [
+    "ugc",
+    "video",
+    "form",
+    "n8n",
+    "sqlite",
+    "express"
+  ],
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.18.2",
-    "sqlite3": "^5.1.6",
-    "multer": "^1.4.5-lts.1",
     "cors": "^2.8.5",
-    "uuid": "^9.0.1",
-    "path": "^0.12.7"
+    "express": "^4.18.2",
+    "multer": "^1.4.5-lts.1",
+    "path": "^0.12.7",
+    "sqlite3": "^5.1.6",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
-    "nodemon": "^3.0.2"
+    "nodemon": "^3.0.2",
+    "tailwindcss": "^4.1.14"
   }
 }
