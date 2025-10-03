@@ -1,10 +1,8 @@
 const multipart = require('lambda-multipart-parser');
 const { v4: uuidv4 } = require('uuid');
+const { getStore } = require('@netlify/blobs');
 
-// In-memory storage for demo (in production, use external storage like AWS S3, Cloudinary, etc.)
-// Note: Netlify Functions are stateless, so files won't persist between invocations
-// You'll need to use external storage service
-
+// Upload images to Netlify Blobs and return a real, publicly accessible URL
 exports.handler = async (event) => {
     // Only allow POST requests
     if (event.httpMethod !== 'POST') {
@@ -56,23 +54,29 @@ exports.handler = async (event) => {
             };
         }
 
-        // Convert buffer to base64
+        // Persist image in Netlify Blobs (public)
         const imageId = uuidv4();
-        const base64Image = file.content.toString('base64');
-        const dataUrl = `data:${file.contentType};base64,${base64Image}`;
+        const store = getStore('images');
 
-        console.log(`📸 Image uploaded: ${file.filename}`);
+        await store.set(imageId, file.content, {
+            contentType: file.contentType,
+            cacheMode: 'public'
+        });
 
-        // Return the data URL (base64 encoded image)
-        // In production, you should upload to cloud storage and return the URL
+        // Construct public URL to the stored blob
+        const siteUrl = process.env.URL || process.env.DEPLOY_PRIME_URL || '';
+        const imageUrl = `${siteUrl}/.netlify/blobs/images/${imageId}`;
+
+        console.log(`📸 Image uploaded to blobs: ${file.filename} -> ${imageUrl}`);
+
         return {
             statusCode: 200,
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 success: true,
                 message: 'تم رفع الصورة بنجاح',
-                imageUrl: dataUrl,
-                imageId: imageId,
+                imageUrl,
+                imageId,
                 filename: file.filename,
                 originalName: file.filename,
                 size: file.content.length
@@ -86,7 +90,7 @@ exports.handler = async (event) => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 success: false,
-                message: 'خطأ في رفع الصورة: ' + error.message
+                message: 'خطأ في رفع الصورة: ' +  error.message
             })
         };
     }
