@@ -38,12 +38,12 @@ class ProductForm {
     }
     
     getApiBaseUrl() {
-        // For local development, use port 4000
+        // For local development, use the Express server
         if (window.location.hostname === 'localhost') {
             return 'http://localhost:4000';
         }
-        // For production (Netlify), API routes are available at the same domain
-        return window.location.origin;
+        // For production (Netlify), use Netlify Functions
+        return `${window.location.origin}/.netlify/functions`;
     }
     
     init() {
