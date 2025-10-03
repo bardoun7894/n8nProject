@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نموذج المنتج - Product Form</title>
+    <title>مولد فيديو UGC - إنشاء فيديو احترافي لمنتجك</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -64,14 +64,121 @@
 <body class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 font-arabic">
     <div class="container mx-auto px-4 py-8">
         <!-- Header -->
-        <div class="text-center mb-8">
-            <h1 class="text-4xl font-bold text-gray-800 mb-2">نموذج طلب المنتج</h1>
-            <p class="text-gray-600">املأ النموذج أدناه لطلب منتجك المفضل</p>
+        <div class="text-center mb-12">
+            <div class="relative">
+                <!-- Background decoration -->
+                <div class="absolute inset-0 bg-gradient-to-r from-primary-50 via-purple-50 to-blue-50 rounded-3xl transform -rotate-1 opacity-50"></div>
+                <div class="relative bg-white rounded-3xl p-8 shadow-lg border border-gray-100">
+                    <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-primary-500 to-purple-600 rounded-2xl mb-6 shadow-lg">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    
+                    <h1 class="text-5xl font-bold bg-gradient-to-r from-gray-800 via-primary-600 to-purple-600 bg-clip-text text-transparent mb-4">
+                        مولد فيديو UGC احترافي
+                    </h1>
+                    <p class="text-xl text-gray-600 mb-3 font-medium">
+                        إنشاء فيديوهات تسويقية احترافية بالذكاء الاصطناعي
+                    </p>
+                    <p class="text-base text-gray-500 mb-8 max-w-2xl mx-auto leading-relaxed">
+                        دمج صورتك مع صورة المنتج وتوليد فيديو UGC عربي مع Lip Sync باستخدام أحدث تقنيات الذكاء الاصطناعي
+                    </p>
+                    
+                    <!-- Process Steps Visualization -->
+                    <div class="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6 sm:space-x-reverse">
+                        <div class="flex flex-col items-center group">
+                            <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl flex items-center justify-center font-bold text-lg mb-2 shadow-lg group-hover:scale-110 transition-transform duration-200">1</div>
+                            <span class="text-sm font-medium text-gray-700">دمج الصور</span>
+                            <span class="text-xs text-gray-500 mt-1">Banana AI</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-1 h-12 sm:w-12 sm:h-1 bg-gradient-to-b sm:bg-gradient-to-r from-blue-400 to-purple-400 rounded-full"></div>
+                        </div>
+                        <div class="flex flex-col items-center group">
+                            <div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-xl flex items-center justify-center font-bold text-lg mb-2 shadow-lg group-hover:scale-110 transition-transform duration-200">2</div>
+                            <span class="text-sm font-medium text-gray-700">توليد الفيديو</span>
+                            <span class="text-xs text-gray-500 mt-1">Veo 3</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-1 h-12 sm:w-12 sm:h-1 bg-gradient-to-b sm:bg-gradient-to-r from-purple-400 to-green-400 rounded-full"></div>
+                        </div>
+                        <div class="flex flex-col items-center group">
+                            <div class="w-12 h-12 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl flex items-center justify-center font-bold text-lg mb-2 shadow-lg group-hover:scale-110 transition-transform duration-200">3</div>
+                            <span class="text-sm font-medium text-gray-700">النتيجة النهائية</span>
+                            <span class="text-xs text-gray-500 mt-1">Lip Sync</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Main Form Card -->
-        <div class="max-w-2xl mx-auto">
-            <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+        <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-white rounded-2xl sm:rounded-3xl shadow-2xl p-6 sm:p-8 lg:p-10 border border-gray-100 relative overflow-hidden">
+                <!-- Background decoration -->
+                <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-primary-100 to-transparent rounded-bl-full opacity-50"></div>
+                <div class="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-purple-100 to-transparent rounded-tr-full opacity-50"></div>
+                <div class="relative z-10">
+                <!-- Video Generation Status (Hidden by default) -->
+                <div id="videoStatus" class="hidden mb-6">
+                    <!-- Processing Status -->
+                    <div id="processingStatus" class="hidden p-6 bg-blue-50 border border-blue-200 rounded-lg">
+                        <div class="flex items-center justify-center mb-4">
+                            <div class="loading-spinner ml-3"></div>
+                            <span class="text-blue-700 font-medium text-lg">جاري إنشاء فيديو UGC الخاص بك...</span>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="flex items-center text-sm">
+                                <div id="step1" class="w-4 h-4 rounded-full bg-blue-500 ml-2"></div>
+                                <span class="text-blue-700">دمج صورتك مع صورة المنتج باستخدام Banana AI</span>
+                            </div>
+                            <div class="flex items-center text-sm">
+                                <div id="step2" class="w-4 h-4 rounded-full bg-gray-300 ml-2"></div>
+                                <span class="text-gray-600">توليد فيديو UGC احترافي باستخدام Veo 3</span>
+                            </div>
+                            <div class="flex items-center text-sm">
+                                <div id="step3" class="w-4 h-4 rounded-full bg-gray-300 ml-2"></div>
+                                <span class="text-gray-600">إضافة الصوت العربي مع Lip Sync</span>
+                            </div>
+                        </div>
+                        <p class="text-blue-600 text-sm mt-4 text-center">هذه العملية قد تستغرق 2-3 دقائق، يرجى الانتظار...</p>
+                    </div>
+
+                    <!-- Success with Video -->
+                    <div id="successWithVideo" class="hidden p-6 bg-green-50 border border-green-200 rounded-lg">
+                        <div class="text-center mb-4">
+                            <svg class="w-12 h-12 text-green-500 mx-auto mb-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                            <h3 class="text-xl font-bold text-green-700 mb-2">🎉 تم إنشاء فيديو UGC بنجاح!</h3>
+                            <p class="text-green-600">فيديوك الاحترافي جاهز للمشاهدة والتحميل</p>
+                        </div>
+                        
+                        <!-- Video Preview -->
+                        <div id="videoPreview" class="bg-white rounded-lg p-4 border-2 border-green-200">
+                            <video id="generatedVideo" class="w-full rounded-lg shadow-lg" controls poster="">
+                                <source src="" type="video/mp4">
+                                متصفحك لا يدعم تشغيل الفيديو
+                            </video>
+                            <div class="flex justify-center mt-4 space-x-4 space-x-reverse">
+                                <a id="downloadVideo" href="#" download class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center">
+                                    <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                    تحميل الفيديو
+                                </a>
+                                <button id="shareVideo" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center">
+                                    <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"></path>
+                                    </svg>
+                                    مشاركة
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Success Message (Hidden by default) -->
                 <div id="successMessage" class="hidden mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
                     <div class="flex items-center">
@@ -102,21 +209,6 @@
                             معلومات المستخدم
                         </h2>
                         
-                        <!-- User Image Preview -->
-                        <div class="mb-4 flex justify-center">
-                            <div class="relative">
-                                <img id="userImagePreview" 
-                                     src="https://via.placeholder.com/120x120/e5e7eb/6b7280?text=صورة+المستخدم" 
-                                     alt="صورة المستخدم" 
-                                     class="w-24 h-24 rounded-full object-cover border-4 border-white shadow-lg image-preview">
-                                <div class="absolute -bottom-1 -right-1 w-6 h-6 bg-primary-500 rounded-full border-2 border-white flex items-center justify-center">
-                                    <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                                    </svg>
-                                </div>
-                            </div>
-                        </div>
-
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <!-- User Name -->
                             <div>
@@ -127,7 +219,7 @@
                                        id="userName" 
                                        name="userName" 
                                        required
-                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                                       class="w-full px-5 py-4 border-2 border-gray-200 rounded-xl focus:ring-3 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200 bg-gray-50 focus:bg-white shadow-sm hover:border-gray-300"
                                        placeholder="أحمد">
                                 <div class="error-message hidden text-red-500 text-sm mt-1"></div>
                             </div>
@@ -141,23 +233,79 @@
                                        id="email" 
                                        name="email" 
                                        required
-                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors ltr-content"
+                                       class="w-full px-5 py-4 border-2 border-gray-200 rounded-xl focus:ring-3 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200 bg-gray-50 focus:bg-white shadow-sm hover:border-gray-300 ltr-content"
                                        placeholder="test@example.com">
                                 <div class="error-message hidden text-red-500 text-sm mt-1"></div>
                             </div>
                         </div>
 
-                        <!-- User Image URL -->
+                        <!-- User Image Input Options -->
                         <div class="mt-4">
-                            <label for="userImageUrl" class="block text-sm font-medium text-gray-700 mb-2">
-                                رابط صورة المستخدم
+                            <label class="block text-sm font-medium text-gray-700 mb-3">
+                                صورة الشخص للدمج *
                             </label>
-                            <input type="url" 
-                                   id="userImageUrl" 
-                                   name="userImageUrl" 
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors ltr-content"
-                                   placeholder="https://example.com/user-image.jpg">
+                            
+                            <!-- Image Input Tabs -->
+                            <div class="flex mb-6 bg-gradient-to-r from-gray-100 to-gray-50 rounded-xl p-1.5 shadow-inner">
+                                <button type="button" id="userUrlTab" class="flex-1 py-2 sm:py-3 px-3 sm:px-6 text-xs sm:text-sm font-semibold rounded-lg text-gray-600 hover:text-gray-800 hover:bg-white/50 transition-all duration-200">
+                                    <svg class="w-3 h-3 sm:w-4 sm:h-4 inline ml-1 sm:ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+                                    </svg>
+                                    <span class="hidden sm:inline">رابط الصورة</span>
+                                    <span class="sm:hidden">رابط</span>
+                                </button>
+                                <button type="button" id="userFileTab" class="flex-1 py-2 sm:py-3 px-3 sm:px-6 text-xs sm:text-sm font-semibold rounded-lg bg-white text-primary-600 shadow-md border border-gray-200 transition-all duration-200 hover:shadow-lg">
+                                    <svg class="w-3 h-3 sm:w-4 sm:h-4 inline ml-1 sm:ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                    </svg>
+                                    <span class="hidden sm:inline">رفع ملف</span>
+                                    <span class="sm:hidden">ملف</span>
+                                </button>
+                            </div>
+                            
+                            <!-- URL Input -->
+                            <div id="userUrlInput" class="hidden mb-6">
+                                <input type="url" 
+                                       id="userImageUrl" 
+                                       name="userImageUrl" 
+                                       class="w-full px-5 py-4 border-2 border-gray-200 rounded-xl focus:ring-3 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200 bg-gray-50 focus:bg-white shadow-sm hover:border-gray-300 ltr-content"
+                                       placeholder="https://example.com/user-image.jpg">
+                            </div>
+                            
+                            <!-- File Input -->
+                            <div id="userFileInput" class="mb-6">
+                                <div class="relative">
+                                    <input type="file" 
+                                           id="userImageFile" 
+                                           name="userImageFile" 
+                                           accept="image/*"
+                                           class="w-full px-5 py-4 border-2 border-dashed border-gray-300 rounded-xl focus:ring-3 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200 bg-gray-50 hover:bg-gray-100 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100">
+                                    <div class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                            
                             <div class="error-message hidden text-red-500 text-sm mt-1"></div>
+                            
+                            <!-- User Image Preview -->
+                            <div class="mt-6 flex justify-center">
+                                <div class="relative group">
+                                    <div class="w-56 h-40 rounded-2xl bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center overflow-hidden transition-all duration-300 hover:border-primary-400 hover:shadow-lg">
+                                        <img id="userImagePreview" 
+                                             src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='150' viewBox='0 0 200 150'%3E%3Crect width='200' height='150' fill='%23f3f4f6'/%3E%3Ctext x='100' y='75' font-family='Arial' font-size='14' fill='%236b7280' text-anchor='middle' dy='0.3em'%3Eصورة الشخص%3C/text%3E%3C/svg%3E" 
+                                             alt="صورة الشخص" 
+                                             class="w-full h-full object-cover rounded-2xl transition-all duration-300">
+                                    </div>
+                                    <div class="absolute -bottom-2 -right-2 w-10 h-10 bg-gradient-to-r from-primary-500 to-primary-600 rounded-full border-3 border-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
+                                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -171,15 +319,17 @@
                         </h2>
 
                         <!-- Product Image Preview -->
-                        <div class="mb-4 flex justify-center">
-                            <div class="relative">
-                                <img id="productImagePreview" 
-                                     src="https://via.placeholder.com/200x150/e5e7eb/6b7280?text=صورة+المنتج" 
-                                     alt="صورة المنتج" 
-                                     class="w-48 h-36 rounded-xl object-cover border-4 border-white shadow-lg image-preview">
-                                <div class="absolute -top-2 -right-2 w-8 h-8 bg-primary-500 rounded-full border-2 border-white flex items-center justify-center">
-                                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        <div class="mb-6 flex justify-center">
+                            <div class="relative group">
+                                <div class="w-56 h-40 rounded-2xl bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center overflow-hidden transition-all duration-300 hover:border-primary-400 hover:shadow-lg">
+                                    <img id="productImagePreview" 
+                                         src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='150' viewBox='0 0 200 150'%3E%3Crect width='200' height='150' fill='%23f3f4f6'/%3E%3Ctext x='100' y='75' font-family='Arial' font-size='14' fill='%236b7280' text-anchor='middle' dy='0.3em'%3Eصورة المنتج%3C/text%3E%3C/svg%3E" 
+                                         alt="صورة المنتج" 
+                                         class="w-full h-full object-cover rounded-2xl transition-all duration-300">
+                                </div>
+                                <div class="absolute -bottom-2 -right-2 w-10 h-10 bg-gradient-to-r from-primary-500 to-primary-600 rounded-full border-3 border-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
+                                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
                                     </svg>
                                 </div>
                             </div>
@@ -194,21 +344,60 @@
                                    id="productName" 
                                    name="productName" 
                                    required
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                                   class="w-full px-5 py-4 border-2 border-gray-200 rounded-xl focus:ring-3 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200 bg-gray-50 focus:bg-white shadow-sm hover:border-gray-300"
                                    placeholder="ساعة ذكية">
                             <div class="error-message hidden text-red-500 text-sm mt-1"></div>
                         </div>
 
-                        <!-- Product Image URL -->
+                        <!-- Product Image Input Options -->
                         <div>
-                            <label for="productImageUrl" class="block text-sm font-medium text-gray-700 mb-2">
-                                رابط صورة المنتج
+                            <label class="block text-sm font-medium text-gray-700 mb-3">
+                                صورة المنتج *
                             </label>
-                            <input type="url" 
-                                   id="productImageUrl" 
-                                   name="productImageUrl" 
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors ltr-content"
-                                   placeholder="https://example.com/product-image.jpg">
+                            
+                            <!-- Image Input Tabs -->
+                            <div class="flex mb-6 bg-gradient-to-r from-gray-100 to-gray-50 rounded-xl p-1.5 shadow-inner">
+                                <button type="button" id="productUrlTab" class="flex-1 py-2 sm:py-3 px-3 sm:px-6 text-xs sm:text-sm font-semibold rounded-lg text-gray-600 hover:text-gray-800 hover:bg-white/50 transition-all duration-200">
+                                    <svg class="w-3 h-3 sm:w-4 sm:h-4 inline ml-1 sm:ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+                                    </svg>
+                                    <span class="hidden sm:inline">رابط الصورة</span>
+                                    <span class="sm:hidden">رابط</span>
+                                </button>
+                                <button type="button" id="productFileTab" class="flex-1 py-2 sm:py-3 px-3 sm:px-6 text-xs sm:text-sm font-semibold rounded-lg bg-white text-primary-600 shadow-md border border-gray-200 transition-all duration-200 hover:shadow-lg">
+                                    <svg class="w-3 h-3 sm:w-4 sm:h-4 inline ml-1 sm:ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                    </svg>
+                                    <span class="hidden sm:inline">رفع ملف</span>
+                                    <span class="sm:hidden">ملف</span>
+                                </button>
+                            </div>
+                            
+                            <!-- URL Input -->
+                            <div id="productUrlInput" class="hidden mb-6">
+                                <input type="url" 
+                                       id="productImageUrl" 
+                                       name="productImageUrl" 
+                                       class="w-full px-5 py-4 border-2 border-gray-200 rounded-xl focus:ring-3 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200 bg-gray-50 focus:bg-white shadow-sm hover:border-gray-300 ltr-content"
+                                       placeholder="https://example.com/product-image.jpg">
+                            </div>
+                            
+                            <!-- File Input -->
+                            <div id="productFileInput" class="mb-6">
+                                <div class="relative">
+                                    <input type="file" 
+                                           id="productImageFile" 
+                                           name="productImageFile" 
+                                           accept="image/*"
+                                           class="w-full px-5 py-4 border-2 border-dashed border-gray-300 rounded-xl focus:ring-3 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200 bg-gray-50 hover:bg-gray-100 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100">
+                                    <div class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                            
                             <div class="error-message hidden text-red-500 text-sm mt-1"></div>
                         </div>
                     </div>
@@ -217,18 +406,34 @@
                     <input type="hidden" id="seed" name="seed" value="123456">
 
                     <!-- Submit Button -->
-                    <div class="pt-6">
-                        <button type="submit" 
-                                id="submitBtn"
-                                class="w-full gradient-bg text-white font-semibold py-4 px-6 rounded-xl hover:shadow-lg transform hover:scale-[1.02] transition-all duration-200 flex items-center justify-center space-x-2 space-x-reverse">
-                            <span id="submitText">اشترِ الآن</span>
-                            <svg id="submitIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l-1.5-6m0 0L4 5M7 13h10m0 0v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6z"></path>
-                            </svg>
-                            <div id="loadingSpinner" class="loading-spinner hidden"></div>
-                        </button>
+                    <div class="pt-8">
+                        <div class="relative group">
+                            <!-- Button glow effect -->
+                            <div class="absolute -inset-1 bg-gradient-to-r from-primary-600 via-purple-600 to-blue-600 rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-300"></div>
+                            <button type="submit" 
+                                    id="submitBtn"
+                                    class="relative w-full bg-gradient-to-r from-primary-500 via-purple-600 to-blue-600 text-white font-bold py-5 px-8 rounded-2xl hover:shadow-2xl transform hover:scale-[1.02] transition-all duration-300 flex items-center justify-center space-x-3 space-x-reverse overflow-hidden">
+                                <!-- Button shine effect -->
+                                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 transform translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+                                
+                                <div class="flex items-center space-x-3 space-x-reverse relative z-10">
+                                    <span class="text-2xl">🎬</span>
+                                    <span id="submitText" class="text-lg">إنشاء فيديو UGC احترافي</span>
+                                    <svg id="submitIcon" class="w-6 h-6 group-hover:rotate-12 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                                    </svg>
+                                </div>
+                                <div id="loadingSpinner" class="loading-spinner hidden absolute"></div>
+                            </button>
+                        </div>
+                        
+                        <!-- Additional info text -->
+                        <p class="text-center text-sm text-gray-500 mt-4">
+                            ⚡ سيتم إنشاء فيديو احترافي خلال دقائق معدودة
+                        </p>
                     </div>
                 </form>
+                </div>
             </div>
         </div>
 

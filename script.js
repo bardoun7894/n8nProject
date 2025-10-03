@@ -11,28 +11,36 @@ class ProductForm {
         this.errorText = document.getElementById('errorText');
         
         // Webhook URL
-        this.webhookUrl = 'https://bardouni12.app.n8n.cloud/webhook/ugc-video';
+        this.webhookUrl = 'https://bardouni12.app.n8n.cloud/webhook-test/ugc-video';
         
         // Default values
         this.defaultValues = {
-            userImageUrl: "https://i.pinimg.com/736x/0a/19/c8/0a19c8b707bba9c3af854c54e48337bc.jpg",
-            productImageUrl: "https://felixgray.com/blog/wp-content/uploads/2019/08/Untitled-Session5394-1-e1603397892155.jpeg",
+            userImageUrl: "",
+            productImageUrl: "",
             productName: "ساعة ذكية",
             userName: "أحمد",
             email: "test@example.com",
             seed: 123456
         };
         
+        // Image input modes
+        this.userImageMode = 'file'; // 'url' or 'file'
+        this.productImageMode = 'file'; // 'url' or 'file'
+        
         this.init();
     }
     
     init() {
-        this.populateDefaultValues();
+        this.loadDefaultValues();
         this.setupEventListeners();
+        this.setupImageTabs();
+        // Set file upload as default for both images
+        this.switchImageTab('user', 'file');
+        this.switchImageTab('product', 'file');
         this.updateImagePreviews();
     }
     
-    populateDefaultValues() {
+    loadDefaultValues() {
         // Populate form with default values
         document.getElementById('userName').value = this.defaultValues.userName;
         document.getElementById('email').value = this.defaultValues.email;
@@ -55,12 +63,91 @@ class ProductForm {
             this.updateImagePreview('product', e.target.value);
         });
         
+        // File input listeners
+        document.getElementById('userImageFile').addEventListener('change', (e) => this.handleFileUpload(e, 'user'));
+        document.getElementById('productImageFile').addEventListener('change', (e) => this.handleFileUpload(e, 'product'));
+        
         // Real-time validation
         const inputs = this.form.querySelectorAll('input[required]');
         inputs.forEach(input => {
             input.addEventListener('blur', () => this.validateField(input));
             input.addEventListener('input', () => this.clearFieldError(input));
         });
+    }
+    
+    setupImageTabs() {
+        // User image tabs
+        document.getElementById('userUrlTab').addEventListener('click', () => this.switchImageTab('user', 'url'));
+        document.getElementById('userFileTab').addEventListener('click', () => this.switchImageTab('user', 'file'));
+        
+        // Product image tabs
+        document.getElementById('productUrlTab').addEventListener('click', () => this.switchImageTab('product', 'url'));
+        document.getElementById('productFileTab').addEventListener('click', () => this.switchImageTab('product', 'file'));
+    }
+
+    switchImageTab(imageType, mode) {
+        if (imageType === 'user') {
+            this.userImageMode = mode;
+            const urlTab = document.getElementById('userUrlTab');
+            const fileTab = document.getElementById('userFileTab');
+            const urlInput = document.getElementById('userUrlInput');
+            const fileInput = document.getElementById('userFileInput');
+            
+            if (mode === 'url') {
+                urlTab.className = 'flex-1 py-2 px-4 text-sm font-medium rounded-md bg-white text-gray-900 shadow-sm';
+                fileTab.className = 'flex-1 py-2 px-4 text-sm font-medium rounded-md text-gray-500 hover:text-gray-900';
+                urlInput.classList.remove('hidden');
+                fileInput.classList.add('hidden');
+            } else {
+                fileTab.className = 'flex-1 py-2 px-4 text-sm font-medium rounded-md bg-white text-gray-900 shadow-sm';
+                urlTab.className = 'flex-1 py-2 px-4 text-sm font-medium rounded-md text-gray-500 hover:text-gray-900';
+                fileInput.classList.remove('hidden');
+                urlInput.classList.add('hidden');
+            }
+        } else if (imageType === 'product') {
+            this.productImageMode = mode;
+            const urlTab = document.getElementById('productUrlTab');
+            const fileTab = document.getElementById('productFileTab');
+            const urlInput = document.getElementById('productUrlInput');
+            const fileInput = document.getElementById('productFileInput');
+            
+            if (mode === 'url') {
+                urlTab.className = 'flex-1 py-2 px-4 text-sm font-medium rounded-md bg-white text-gray-900 shadow-sm';
+                fileTab.className = 'flex-1 py-2 px-4 text-sm font-medium rounded-md text-gray-500 hover:text-gray-900';
+                urlInput.classList.remove('hidden');
+                fileInput.classList.add('hidden');
+            } else {
+                fileTab.className = 'flex-1 py-2 px-4 text-sm font-medium rounded-md bg-white text-gray-900 shadow-sm';
+                urlTab.className = 'flex-1 py-2 px-4 text-sm font-medium rounded-md text-gray-500 hover:text-gray-900';
+                fileInput.classList.remove('hidden');
+                urlInput.classList.add('hidden');
+            }
+        }
+    }
+
+    handleFileUpload(event, imageType) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            this.showMessage('error', 'يرجى اختيار ملف صورة صالح');
+            return;
+        }
+
+        // Validate file size (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            this.showMessage('error', 'حجم الملف كبير جداً. يرجى اختيار صورة أصغر من 5 ميجابايت');
+            return;
+        }
+
+        // Create preview
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const previewId = imageType === 'user' ? 'userImagePreview' : 'productImagePreview';
+            document.getElementById(previewId).src = e.target.result;
+        };
+        reader.readAsDataURL(file);
     }
     
     updateImagePreviews() {
@@ -164,16 +251,69 @@ class ProductForm {
     }
     
     validateForm() {
-        const requiredFields = this.form.querySelectorAll('input[required]');
         let isValid = true;
+        const requiredFields = ['userName', 'email', 'productName'];
         
-        requiredFields.forEach(field => {
-            if (!this.validateField(field)) {
+        // Clear previous errors
+        this.clearAllErrors();
+        
+        // Validate required text fields
+        requiredFields.forEach(fieldName => {
+            const field = document.getElementById(fieldName);
+            if (!field.value.trim()) {
+                this.showFieldError(field, 'هذا الحقل مطلوب');
                 isValid = false;
             }
         });
         
+        // Validate email format
+        const email = document.getElementById('email');
+        if (email.value.trim() && !this.isValidEmail(email.value.trim())) {
+            this.showFieldError(email, 'يرجى إدخال بريد إلكتروني صالح');
+            isValid = false;
+        }
+        
+        // Validate user image
+        if (this.userImageMode === 'url') {
+            const userImageUrl = document.getElementById('userImageUrl');
+            if (userImageUrl.value.trim() && !this.isValidUrl(userImageUrl.value.trim())) {
+                this.showFieldError(userImageUrl, 'يرجى إدخال رابط صالح للصورة');
+                isValid = false;
+            }
+        } else {
+            const userImageFile = document.getElementById('userImageFile');
+            if (userImageFile.files.length === 0) {
+                this.showFieldError(userImageFile, 'يرجى اختيار صورة للشخص');
+                isValid = false;
+            }
+        }
+        
+        // Validate product image
+        if (this.productImageMode === 'url') {
+            const productImageUrl = document.getElementById('productImageUrl');
+            if (productImageUrl.value.trim() && !this.isValidUrl(productImageUrl.value.trim())) {
+                this.showFieldError(productImageUrl, 'يرجى إدخال رابط صالح للصورة');
+                isValid = false;
+            }
+        } else {
+            const productImageFile = document.getElementById('productImageFile');
+            if (productImageFile.files.length === 0) {
+                this.showFieldError(productImageFile, 'يرجى اختيار صورة للمنتج');
+                isValid = false;
+            }
+        }
+        
         return isValid;
+    }
+    
+    clearAllErrors() {
+        const fields = this.form.querySelectorAll('input');
+        fields.forEach(field => this.clearFieldError(field));
+    }
+    
+    isValidEmail(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
     }
     
     setLoadingState(loading) {
@@ -216,13 +356,17 @@ class ProductForm {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
     
-    getFormData() {
+    async getFormData() {
         const formData = new FormData(this.form);
         const data = {};
         
         // Convert FormData to regular object
-        for (let [key, value] = formData) {
-            data[key] = value.trim();
+        for (let [key, value] of formData) {
+            if (typeof value === 'string') {
+                data[key] = value.trim();
+            } else {
+                data[key] = value;
+            }
         }
         
         // Convert seed to number
@@ -230,15 +374,44 @@ class ProductForm {
             data.seed = parseInt(data.seed);
         }
         
-        // Use default images if URLs are empty
-        if (!data.userImageUrl) {
-            data.userImageUrl = this.defaultValues.userImageUrl;
+        // Handle user image based on mode
+        if (this.userImageMode === 'file') {
+            const fileInput = document.getElementById('userImageFile');
+            if (fileInput.files[0]) {
+                data.userImageUrl = await this.fileToBase64(fileInput.files[0]);
+            } else {
+                data.userImageUrl = this.defaultValues.userImageUrl;
+            }
+        } else {
+            if (!data.userImageUrl) {
+                data.userImageUrl = this.defaultValues.userImageUrl;
+            }
         }
-        if (!data.productImageUrl) {
-            data.productImageUrl = this.defaultValues.productImageUrl;
+        
+        // Handle product image based on mode
+        if (this.productImageMode === 'file') {
+            const fileInput = document.getElementById('productImageFile');
+            if (fileInput.files[0]) {
+                data.productImageUrl = await this.fileToBase64(fileInput.files[0]);
+            } else {
+                data.productImageUrl = this.defaultValues.productImageUrl;
+            }
+        } else {
+            if (!data.productImageUrl) {
+                data.productImageUrl = this.defaultValues.productImageUrl;
+            }
         }
         
         return data;
+    }
+    
+    fileToBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = error => reject(error);
+        });
     }
     
     async handleSubmit(e) {
@@ -254,10 +427,11 @@ class ProductForm {
         this.setLoadingState(true);
         
         try {
-            // Get form data
-            const data = this.getFormData();
+            // Get form data (now async to handle file conversion)
+            const data = await this.getFormData();
             
-            console.log('Submitting data:', data);
+            console.log('🚀 Submitting to:', this.webhookUrl);
+            console.log('📦 Data:', JSON.stringify(data, null, 2));
             
             // Submit to webhook
             const response = await fetch(this.webhookUrl, {
@@ -268,11 +442,9 @@ class ProductForm {
                 body: JSON.stringify(data)
             });
             
-            console.log('Response status:', response.status);
-            console.log('Response headers:', response.headers);
-            
             if (response.ok) {
                 // Success
+                console.log('✅ Success! Status:', response.status);
                 this.showMessage('success');
                 
                 // Optional: Reset form after successful submission
@@ -292,20 +464,24 @@ class ProductForm {
                     console.error('Error parsing error response:', parseError);
                 }
                 
-                console.error('HTTP Error:', response.status, response.statusText);
+                console.error('❌ HTTP Error:', response.status, response.statusText);
                 this.showMessage('error', errorMessage);
             }
             
         } catch (error) {
-            console.error('Network Error:', error);
+            console.error('🔥 Network Error:', error.message);
             
             let errorMessage = 'حدث خطأ في الاتصال بالخادم';
             
             if (error.name === 'TypeError' && error.message.includes('fetch')) {
                 errorMessage = 'تعذر الاتصال بالخادم. يرجى التحقق من اتصال الإنترنت';
+            } else if (error.message.includes('CORS')) {
+                errorMessage = 'خطأ في إعدادات الخادم (CORS). يرجى التحقق من إعدادات الخادم';
+            } else if (error.message.includes('NetworkError')) {
+                errorMessage = 'خطأ في الشبكة. يرجى التحقق من اتصال الإنترنت';
             }
             
-            this.showMessage('error', errorMessage);
+            this.showMessage('error', errorMessage + ' - ' + error.message);
         } finally {
             // Remove loading state
             this.setLoadingState(false);
