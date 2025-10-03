@@ -38,14 +38,9 @@ class ProductForm {
     }
     
     getApiBaseUrl() {
-        // Check if we're running locally
-        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-            return `${window.location.protocol}//${window.location.host}`;
-        }
-        
-        // For production, use the Netlify URL
-        const BACKEND_URL = 'https://ugcn8n.netlify.app';
-        return BACKEND_URL;
+        // For Netlify Functions, API routes are available at the same domain
+        // Netlify automatically handles /api/* routes via netlify.toml redirects
+        return window.location.origin;
     }
     
     init() {
