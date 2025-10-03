@@ -38,8 +38,11 @@ class ProductForm {
     }
     
     getApiBaseUrl() {
-        // For Netlify Functions, API routes are available at the same domain
-        // Netlify automatically handles /api/* routes via netlify.toml redirects
+        // For local development, use port 4000
+        if (window.location.hostname === 'localhost') {
+            return 'http://localhost:4000';
+        }
+        // For production (Netlify), API routes are available at the same domain
         return window.location.origin;
     }
     
@@ -559,16 +562,53 @@ class ProductForm {
             const formData = new FormData();
             formData.append('image', file);
             
-            const response = await fetch(`${this.apiBaseUrl}/api/upload`, {
+            console.log(`📤 Uploading ${imageType} image:`, {
+                filename: file.name,
+                type: file.type,
+                size: file.size,
+                lastModified: file.lastModified
+            });
+            
+            const uploadUrl = `${this.apiBaseUrl}/api/upload`;
+            console.log('🔗 Upload URL:', uploadUrl);
+            
+            console.log('📦 Request body:', {
+                formData: {
+                    entries: Array.from(formData.entries()).map(([key, value]) => ({
+                        key,
+                        value: value instanceof File ? {
+                            name: value.name,
+                            type: value.type,
+                            size: value.size
+                        } : value
+                    }))
+                }
+            });
+            
+            const response = await fetch(uploadUrl, {
                 method: 'POST',
                 body: formData
             });
             
+            console.log('📥 Response status:', response.status);
+            console.log('📥 Response headers:', Object.fromEntries(response.headers.entries()));
+            
+            const responseText = await response.text();
+            console.log('📥 Raw response:', responseText);
+            
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                console.error(`❌ Upload failed with status ${response.status}:`, responseText);
+                throw new Error(`HTTP error! status: ${response.status}\nResponse: ${responseText}`);
             }
             
-            const result = await response.json();
+            let result;
+            try {
+                result = JSON.parse(responseText);
+                console.log(`📥 Parsed response:`, result);
+            } catch (parseError) {
+                console.error('❌ Failed to parse response as JSON:', parseError);
+                throw new Error(`Invalid JSON response: ${responseText}`);
+            }
             
             if (result.success) {
                 console.log(`✅ ${imageType} image uploaded successfully:`, result.imageUrl);
@@ -578,7 +618,13 @@ class ProductForm {
             }
             
         } catch (error) {
-            console.error(`❌ Error uploading ${imageType} image:`, error);
+            console.error(`❌ Error uploading ${imageType} image:`, {
+                error: {
+                    name: error.name,
+                    message: error.message,
+                    stack: error.stack
+                }
+            });
             this.showMessage('error', `خطأ في رفع صورة ${imageType === 'user' ? 'المستخدم' : 'المنتج'}: ${error.message}`);
             throw error;
         }
