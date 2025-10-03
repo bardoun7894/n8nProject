@@ -18,13 +18,17 @@ class ProductForm {
         this.uploadedUserImageUrl = null;
         this.uploadedProductImageUrl = null;
         
-        // Webhook URL
-        this.webhookUrl = 'https://n8n.chairi.dev/webhook/product-form';
+        // Webhook URL - n8n Production Webhook
+        this.webhookUrl = 'https://bardouni12.app.n8n.cloud/webhook/ugc-video';
         
         // Default values
         this.defaultValues = {
             userImageUrl: '',
-            productImageUrl: ''
+            productImageUrl: '',
+            productName: 'ساعة ذكية',
+            userName: 'أحمد',
+            email: 'test@example.com',
+            seed: 123456
         };
         
         this.init();
@@ -71,8 +75,12 @@ class ProductForm {
         });
         
         // File input listeners
-        document.getElementById('userImageFile').addEventListener('change', (e) => this.handleFileUpload(e, 'user'));
-        document.getElementById('productImageFile').addEventListener('change', (e) => this.handleFileUpload(e, 'product'));
+        document.getElementById('userImageFile').addEventListener('change', (e) => {
+            this.handleFileUpload(e, 'user');
+        });
+        document.getElementById('productImageFile').addEventListener('change', (e) => {
+            this.handleFileUpload(e, 'product');
+        });
         
         // Real-time validation
         const inputs = this.form.querySelectorAll('input[required]');
@@ -151,8 +159,8 @@ class ProductForm {
             // Show immediate preview with local file
             const reader = new FileReader();
             reader.onload = (e) => {
-                const previewId = mode === 'user' ? 'userImagePreview' : 'productImagePreview';
-                document.getElementById(previewId).src = e.target.result;
+                console.log(`📷 Showing immediate preview for ${mode}:`, file.name);
+                this.updateImagePreview(mode, e.target.result);
             };
             reader.readAsDataURL(file);
             
@@ -168,14 +176,28 @@ class ProductForm {
                     this.uploadedUserImageUrl = imageUrl;
                     console.log('✅ User image uploaded successfully:', imageUrl);
                     console.log('📁 User image URL path:', imageUrl);
+                    // Also update the URL input field if in URL mode
+                    const userUrlInput = document.getElementById('userImageUrl');
+                    if (userUrlInput) userUrlInput.value = imageUrl;
                 } else if (mode === 'product') {
                     this.uploadedProductImageUrl = imageUrl;
                     console.log('✅ Product image uploaded successfully:', imageUrl);
                     console.log('📁 Product image URL path:', imageUrl);
+                    // Also update the URL input field if in URL mode
+                    const productUrlInput = document.getElementById('productImageUrl');
+                    if (productUrlInput) productUrlInput.value = imageUrl;
                 }
                 
-                // Update preview with the uploaded image URL
+                // Update preview with the uploaded image URL (force update)
+                console.log(`🔄 Updating preview with final uploaded URL for ${mode}:`, imageUrl);
                 this.updateImagePreview(mode, imageUrl);
+                
+                // Force another update after a brief delay to ensure it takes effect
+                setTimeout(() => {
+                    console.log(`🔄 Final preview update for ${mode}:`, imageUrl);
+                    this.updateImagePreview(mode, imageUrl);
+                }, 500);
+                
                 this.showMessage('تم رفع الصورة بنجاح!', 'success');
                 
                 console.log(`📊 Current uploaded URLs:`, {
@@ -186,6 +208,18 @@ class ProductForm {
         } catch (error) {
             console.error(`❌ Error uploading ${mode} image:`, error);
             this.showMessage('حدث خطأ أثناء رفع الصورة', 'error');
+        }
+    }
+
+    previewSelectedFile(event, type) {
+        const file = event.target.files[0];
+        if (file && this.validateFile(file)) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                console.log(`📷 Previewing selected ${type} file:`, file.name);
+                this.updateImagePreview(type, e.target.result);
+            };
+            reader.readAsDataURL(file);
         }
     }
 
@@ -212,27 +246,42 @@ class ProductForm {
     }
     
     updateImagePreview(type, url) {
-        const previewElement = document.getElementById(`${type}ImagePreview`);
+        const previewContainer = document.getElementById(`${type}ImagePreview`);
+        const previewImg = document.getElementById(`${type}PreviewImg`);
         const placeholderUrls = {
             user: 'https://via.placeholder.com/120x120/e5e7eb/6b7280?text=صورة+المستخدم',
             product: 'https://via.placeholder.com/200x150/e5e7eb/6b7280?text=صورة+المنتج'
         };
         
+        console.log(`🖼️ Updating ${type} image preview with URL:`, url);
+        
+        if (!previewContainer || !previewImg) {
+            console.error(`❌ Preview elements not found: ${type}ImagePreview or ${type}PreviewImg`);
+            return;
+        }
+        
         if (url && this.isValidUrl(url)) {
+            console.log(`✅ Valid URL detected for ${type} image:`, url);
             // Test if image loads successfully
             const img = new Image();
             img.onload = () => {
-                previewElement.src = url;
-                previewElement.classList.remove('opacity-50');
+                console.log(`✅ Image loaded successfully for ${type}:`, url);
+                previewImg.src = url;
+                previewImg.classList.remove('opacity-50');
+                previewContainer.classList.remove('hidden'); // Show the preview container
             };
             img.onerror = () => {
-                previewElement.src = placeholderUrls[type];
-                previewElement.classList.add('opacity-50');
+                console.log(`❌ Image failed to load for ${type}:`, url);
+                previewImg.src = placeholderUrls[type];
+                previewImg.classList.add('opacity-50');
+                previewContainer.classList.remove('hidden'); // Show the preview container even for placeholders
             };
             img.src = url;
         } else {
-            previewElement.src = placeholderUrls[type];
-            previewElement.classList.remove('opacity-50');
+            console.log(`⚠️ Invalid or empty URL for ${type}, using placeholder:`, url);
+            previewImg.src = placeholderUrls[type];
+            previewImg.classList.remove('opacity-50');
+            previewContainer.classList.add('hidden'); // Hide container for empty URLs
         }
     }
     
@@ -373,17 +422,21 @@ class ProductForm {
     
     setLoadingState(loading) {
         if (loading) {
-            this.submitBtn.disabled = true;
-            this.submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
-            this.submitText.textContent = 'جاري الإرسال...';
-            this.submitIcon.classList.add('hidden');
-            this.loadingSpinner.classList.remove('hidden');
+            if (this.submitBtn) {
+                this.submitBtn.disabled = true;
+                this.submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
+            }
+            if (this.submitText) this.submitText.textContent = 'جاري الإرسال...';
+            if (this.submitIcon) this.submitIcon.classList.add('hidden');
+            if (this.loadingSpinner) this.loadingSpinner.classList.remove('hidden');
         } else {
-            this.submitBtn.disabled = false;
-            this.submitBtn.classList.remove('opacity-75', 'cursor-not-allowed');
-            this.submitText.textContent = 'اشترِ الآن';
-            this.submitIcon.classList.remove('hidden');
-            this.loadingSpinner.classList.add('hidden');
+            if (this.submitBtn) {
+                this.submitBtn.disabled = false;
+                this.submitBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+            }
+            if (this.submitText) this.submitText.textContent = 'اشترِ الآن';
+            if (this.submitIcon) this.submitIcon.classList.remove('hidden');
+            if (this.loadingSpinner) this.loadingSpinner.classList.add('hidden');
         }
     }
     
@@ -437,16 +490,25 @@ class ProductForm {
                 console.log('✅ Using pre-uploaded user image:', this.uploadedUserImageUrl);
             } else {
                 const fileInput = document.getElementById('userImageFile');
-                if (fileInput.files[0]) {
+                if (fileInput && fileInput.files[0]) {
                     console.log('📤 Uploading user image during submit...');
-                    data.userImageUrl = await this.uploadImage(fileInput.files[0], 'user');
+                    const uploadedUrl = await this.uploadImage(fileInput.files[0], 'user');
+                    this.uploadedUserImageUrl = uploadedUrl;
+                    data.userImageUrl = uploadedUrl;
                 } else {
                     data.userImageUrl = this.defaultValues.userImageUrl;
                 }
             }
         } else {
-            if (!data.userImageUrl) {
+            // URL mode - use the URL input value or uploaded URL if available
+            if (this.uploadedUserImageUrl) {
+                data.userImageUrl = this.uploadedUserImageUrl;
+                console.log('✅ Using uploaded user image URL:', this.uploadedUserImageUrl);
+            } else if (data.userImageUrl && data.userImageUrl.trim()) {
+                console.log('✅ Using user-entered URL:', data.userImageUrl);
+            } else {
                 data.userImageUrl = this.defaultValues.userImageUrl;
+                console.log('✅ Using default user image URL');
             }
         }
         
@@ -458,16 +520,25 @@ class ProductForm {
                 console.log('✅ Using pre-uploaded product image:', this.uploadedProductImageUrl);
             } else {
                 const fileInput = document.getElementById('productImageFile');
-                if (fileInput.files[0]) {
+                if (fileInput && fileInput.files[0]) {
                     console.log('📤 Uploading product image during submit...');
-                    data.productImageUrl = await this.uploadImage(fileInput.files[0], 'product');
+                    const uploadedUrl = await this.uploadImage(fileInput.files[0], 'product');
+                    this.uploadedProductImageUrl = uploadedUrl;
+                    data.productImageUrl = uploadedUrl;
                 } else {
                     data.productImageUrl = this.defaultValues.productImageUrl;
                 }
             }
         } else {
-            if (!data.productImageUrl) {
+            // URL mode - use the URL input value or uploaded URL if available
+            if (this.uploadedProductImageUrl) {
+                data.productImageUrl = this.uploadedProductImageUrl;
+                console.log('✅ Using uploaded product image URL:', this.uploadedProductImageUrl);
+            } else if (data.productImageUrl && data.productImageUrl.trim()) {
+                console.log('✅ Using user-entered URL:', data.productImageUrl);
+            } else {
                 data.productImageUrl = this.defaultValues.productImageUrl;
+                console.log('✅ Using default product image URL');
             }
         }
         
