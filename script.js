@@ -10,22 +10,22 @@ class ProductForm {
         this.errorMessage = document.getElementById('errorMessage');
         this.errorText = document.getElementById('errorText');
         
+        // Image mode tracking
+        this.userImageMode = 'file'; // Default to file upload
+        this.productImageMode = 'file'; // Default to file upload
+        
+        // Store uploaded image URLs
+        this.uploadedUserImageUrl = null;
+        this.uploadedProductImageUrl = null;
+        
         // Webhook URL
-        this.webhookUrl = 'https://bardouni12.app.n8n.cloud/webhook-test/ugc-video';
+        this.webhookUrl = 'https://n8n.chairi.dev/webhook/product-form';
         
         // Default values
         this.defaultValues = {
-            userImageUrl: "",
-            productImageUrl: "",
-            productName: "ساعة ذكية",
-            userName: "أحمد",
-            email: "test@example.com",
-            seed: 123456
+            userImageUrl: '',
+            productImageUrl: ''
         };
-        
-        // Image input modes
-        this.userImageMode = 'file'; // 'url' or 'file'
-        this.productImageMode = 'file'; // 'url' or 'file'
         
         this.init();
     }
@@ -41,13 +41,20 @@ class ProductForm {
     }
     
     loadDefaultValues() {
-        // Populate form with default values
-        document.getElementById('userName').value = this.defaultValues.userName;
-        document.getElementById('email').value = this.defaultValues.email;
-        document.getElementById('productName').value = this.defaultValues.productName;
-        document.getElementById('userImageUrl').value = this.defaultValues.userImageUrl;
-        document.getElementById('productImageUrl').value = this.defaultValues.productImageUrl;
-        document.getElementById('seed').value = this.defaultValues.seed;
+        // Populate form with default values - check if elements exist first
+        const userName = document.getElementById('userName');
+        const email = document.getElementById('email');
+        const productName = document.getElementById('productName');
+        const userImageUrl = document.getElementById('userImageUrl');
+        const productImageUrl = document.getElementById('productImageUrl');
+        const seed = document.getElementById('seed');
+        
+        if (userName) userName.value = this.defaultValues.userName || '';
+        if (email) email.value = this.defaultValues.email || '';
+        if (productName) productName.value = this.defaultValues.productName || '';
+        if (userImageUrl) userImageUrl.value = this.defaultValues.userImageUrl || '';
+        if (productImageUrl) productImageUrl.value = this.defaultValues.productImageUrl || '';
+        if (seed) seed.value = this.defaultValues.seed || '';
     }
     
     setupEventListeners() {
@@ -77,77 +84,125 @@ class ProductForm {
     
     setupImageTabs() {
         // User image tabs
-        document.getElementById('userUrlTab').addEventListener('click', () => this.switchImageTab('user', 'url'));
-        document.getElementById('userFileTab').addEventListener('click', () => this.switchImageTab('user', 'file'));
+        const userUrlTab = document.getElementById('userUrlTab');
+        const userUploadTab = document.getElementById('userUploadTab');
+        const productUrlTab = document.getElementById('productUrlTab');
+        const productUploadTab = document.getElementById('productUploadTab');
+        
+        if (userUrlTab) userUrlTab.addEventListener('click', () => this.switchImageTab('user', 'url'));
+        if (userUploadTab) userUploadTab.addEventListener('click', () => this.switchImageTab('user', 'file'));
         
         // Product image tabs
-        document.getElementById('productUrlTab').addEventListener('click', () => this.switchImageTab('product', 'url'));
-        document.getElementById('productFileTab').addEventListener('click', () => this.switchImageTab('product', 'file'));
+        if (productUrlTab) productUrlTab.addEventListener('click', () => this.switchImageTab('product', 'url'));
+        if (productUploadTab) productUploadTab.addEventListener('click', () => this.switchImageTab('product', 'file'));
     }
 
     switchImageTab(imageType, mode) {
         if (imageType === 'user') {
             this.userImageMode = mode;
             const urlTab = document.getElementById('userUrlTab');
-            const fileTab = document.getElementById('userFileTab');
-            const urlInput = document.getElementById('userUrlInput');
-            const fileInput = document.getElementById('userFileInput');
+            const fileTab = document.getElementById('userUploadTab');
+            const urlContent = document.getElementById('userUrlContent');
+            const fileContent = document.getElementById('userUploadContent');
             
             if (mode === 'url') {
-                urlTab.className = 'flex-1 py-2 px-4 text-sm font-medium rounded-md bg-white text-gray-900 shadow-sm';
-                fileTab.className = 'flex-1 py-2 px-4 text-sm font-medium rounded-md text-gray-500 hover:text-gray-900';
-                urlInput.classList.remove('hidden');
-                fileInput.classList.add('hidden');
+                urlTab.className = 'flex-1 px-4 py-2 text-sm font-medium rounded-lg bg-blue-600 text-white shadow-sm transition-colors duration-200';
+                fileTab.className = 'flex-1 px-4 py-2 text-sm font-medium rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors duration-200';
+                urlContent.classList.remove('hidden');
+                fileContent.classList.add('hidden');
             } else {
-                fileTab.className = 'flex-1 py-2 px-4 text-sm font-medium rounded-md bg-white text-gray-900 shadow-sm';
-                urlTab.className = 'flex-1 py-2 px-4 text-sm font-medium rounded-md text-gray-500 hover:text-gray-900';
-                fileInput.classList.remove('hidden');
-                urlInput.classList.add('hidden');
+                fileTab.className = 'flex-1 px-4 py-2 text-sm font-medium rounded-lg bg-blue-600 text-white shadow-sm transition-colors duration-200';
+                urlTab.className = 'flex-1 px-4 py-2 text-sm font-medium rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors duration-200';
+                fileContent.classList.remove('hidden');
+                urlContent.classList.add('hidden');
             }
         } else if (imageType === 'product') {
             this.productImageMode = mode;
             const urlTab = document.getElementById('productUrlTab');
-            const fileTab = document.getElementById('productFileTab');
-            const urlInput = document.getElementById('productUrlInput');
-            const fileInput = document.getElementById('productFileInput');
+            const fileTab = document.getElementById('productUploadTab');
+            const urlContent = document.getElementById('productUrlContent');
+            const fileContent = document.getElementById('productUploadContent');
             
             if (mode === 'url') {
-                urlTab.className = 'flex-1 py-2 px-4 text-sm font-medium rounded-md bg-white text-gray-900 shadow-sm';
-                fileTab.className = 'flex-1 py-2 px-4 text-sm font-medium rounded-md text-gray-500 hover:text-gray-900';
-                urlInput.classList.remove('hidden');
-                fileInput.classList.add('hidden');
+                urlTab.className = 'flex-1 px-4 py-2 text-sm font-medium rounded-lg bg-purple-600 text-white shadow-sm transition-colors duration-200';
+                fileTab.className = 'flex-1 px-4 py-2 text-sm font-medium rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors duration-200';
+                urlContent.classList.remove('hidden');
+                fileContent.classList.add('hidden');
             } else {
-                fileTab.className = 'flex-1 py-2 px-4 text-sm font-medium rounded-md bg-white text-gray-900 shadow-sm';
-                urlTab.className = 'flex-1 py-2 px-4 text-sm font-medium rounded-md text-gray-500 hover:text-gray-900';
-                fileInput.classList.remove('hidden');
-                urlInput.classList.add('hidden');
+                fileTab.className = 'flex-1 px-4 py-2 text-sm font-medium rounded-lg bg-purple-600 text-white shadow-sm transition-colors duration-200';
+                urlTab.className = 'flex-1 px-4 py-2 text-sm font-medium rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors duration-200';
+                fileContent.classList.remove('hidden');
+                urlContent.classList.add('hidden');
             }
         }
     }
 
-    handleFileUpload(event, imageType) {
+    async handleFileUpload(event, mode) {
         const file = event.target.files[0];
         if (!file) return;
+        
+        console.log(`🔄 Starting file upload for ${mode} mode:`, file.name);
+        
+        if (!this.validateFile(file)) {
+            return;
+        }
 
+        try {
+            // Show immediate preview with local file
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const previewId = mode === 'user' ? 'userImagePreview' : 'productImagePreview';
+                document.getElementById(previewId).src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+            
+            // Show loading state
+            this.showMessage('جاري رفع الصورة...', 'info');
+            
+            // Upload the image
+            const imageUrl = await this.uploadImage(file, mode);
+            
+            if (imageUrl) {
+                // Store the uploaded URL
+                if (mode === 'user') {
+                    this.uploadedUserImageUrl = imageUrl;
+                    console.log('✅ User image uploaded successfully:', imageUrl);
+                    console.log('📁 User image URL path:', imageUrl);
+                } else if (mode === 'product') {
+                    this.uploadedProductImageUrl = imageUrl;
+                    console.log('✅ Product image uploaded successfully:', imageUrl);
+                    console.log('📁 Product image URL path:', imageUrl);
+                }
+                
+                // Update preview with the uploaded image URL
+                this.updateImagePreview(mode, imageUrl);
+                this.showMessage('تم رفع الصورة بنجاح!', 'success');
+                
+                console.log(`📊 Current uploaded URLs:`, {
+                    userImage: this.uploadedUserImageUrl,
+                    productImage: this.uploadedProductImageUrl
+                });
+            }
+        } catch (error) {
+            console.error(`❌ Error uploading ${mode} image:`, error);
+            this.showMessage('حدث خطأ أثناء رفع الصورة', 'error');
+        }
+    }
+
+    validateFile(file) {
         // Validate file type
         if (!file.type.startsWith('image/')) {
-            this.showMessage('error', 'يرجى اختيار ملف صورة صالح');
-            return;
+            this.showMessage('يرجى اختيار ملف صورة صالح', 'error');
+            return false;
         }
 
         // Validate file size (max 5MB)
         if (file.size > 5 * 1024 * 1024) {
-            this.showMessage('error', 'حجم الملف كبير جداً. يرجى اختيار صورة أصغر من 5 ميجابايت');
-            return;
+            this.showMessage('حجم الملف كبير جداً. يرجى اختيار صورة أصغر من 5 ميجابايت', 'error');
+            return false;
         }
 
-        // Create preview
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const previewId = imageType === 'user' ? 'userImagePreview' : 'productImagePreview';
-            document.getElementById(previewId).src = e.target.result;
-        };
-        reader.readAsDataURL(file);
+        return true;
     }
     
     updateImagePreviews() {
@@ -260,7 +315,7 @@ class ProductForm {
         // Validate required text fields
         requiredFields.forEach(fieldName => {
             const field = document.getElementById(fieldName);
-            if (!field.value.trim()) {
+            if (field && !field.value.trim()) {
                 this.showFieldError(field, 'هذا الحقل مطلوب');
                 isValid = false;
             }
@@ -268,7 +323,7 @@ class ProductForm {
         
         // Validate email format
         const email = document.getElementById('email');
-        if (email.value.trim() && !this.isValidEmail(email.value.trim())) {
+        if (email && email.value.trim() && !this.isValidEmail(email.value.trim())) {
             this.showFieldError(email, 'يرجى إدخال بريد إلكتروني صالح');
             isValid = false;
         }
@@ -276,13 +331,13 @@ class ProductForm {
         // Validate user image
         if (this.userImageMode === 'url') {
             const userImageUrl = document.getElementById('userImageUrl');
-            if (userImageUrl.value.trim() && !this.isValidUrl(userImageUrl.value.trim())) {
+            if (userImageUrl && userImageUrl.value.trim() && !this.isValidUrl(userImageUrl.value.trim())) {
                 this.showFieldError(userImageUrl, 'يرجى إدخال رابط صالح للصورة');
                 isValid = false;
             }
         } else {
             const userImageFile = document.getElementById('userImageFile');
-            if (userImageFile.files.length === 0) {
+            if (userImageFile && userImageFile.files.length === 0) {
                 this.showFieldError(userImageFile, 'يرجى اختيار صورة للشخص');
                 isValid = false;
             }
@@ -291,13 +346,13 @@ class ProductForm {
         // Validate product image
         if (this.productImageMode === 'url') {
             const productImageUrl = document.getElementById('productImageUrl');
-            if (productImageUrl.value.trim() && !this.isValidUrl(productImageUrl.value.trim())) {
+            if (productImageUrl && productImageUrl.value.trim() && !this.isValidUrl(productImageUrl.value.trim())) {
                 this.showFieldError(productImageUrl, 'يرجى إدخال رابط صالح للصورة');
                 isValid = false;
             }
         } else {
             const productImageFile = document.getElementById('productImageFile');
-            if (productImageFile.files.length === 0) {
+            if (productImageFile && productImageFile.files.length === 0) {
                 this.showFieldError(productImageFile, 'يرجى اختيار صورة للمنتج');
                 isValid = false;
             }
@@ -376,11 +431,18 @@ class ProductForm {
         
         // Handle user image based on mode
         if (this.userImageMode === 'file') {
-            const fileInput = document.getElementById('userImageFile');
-            if (fileInput.files[0]) {
-                data.userImageUrl = await this.fileToBase64(fileInput.files[0]);
+            // Use pre-uploaded URL if available, otherwise upload now
+            if (this.uploadedUserImageUrl) {
+                data.userImageUrl = this.uploadedUserImageUrl;
+                console.log('✅ Using pre-uploaded user image:', this.uploadedUserImageUrl);
             } else {
-                data.userImageUrl = this.defaultValues.userImageUrl;
+                const fileInput = document.getElementById('userImageFile');
+                if (fileInput.files[0]) {
+                    console.log('📤 Uploading user image during submit...');
+                    data.userImageUrl = await this.uploadImage(fileInput.files[0], 'user');
+                } else {
+                    data.userImageUrl = this.defaultValues.userImageUrl;
+                }
             }
         } else {
             if (!data.userImageUrl) {
@@ -390,11 +452,18 @@ class ProductForm {
         
         // Handle product image based on mode
         if (this.productImageMode === 'file') {
-            const fileInput = document.getElementById('productImageFile');
-            if (fileInput.files[0]) {
-                data.productImageUrl = await this.fileToBase64(fileInput.files[0]);
+            // Use pre-uploaded URL if available, otherwise upload now
+            if (this.uploadedProductImageUrl) {
+                data.productImageUrl = this.uploadedProductImageUrl;
+                console.log('✅ Using pre-uploaded product image:', this.uploadedProductImageUrl);
             } else {
-                data.productImageUrl = this.defaultValues.productImageUrl;
+                const fileInput = document.getElementById('productImageFile');
+                if (fileInput.files[0]) {
+                    console.log('📤 Uploading product image during submit...');
+                    data.productImageUrl = await this.uploadImage(fileInput.files[0], 'product');
+                } else {
+                    data.productImageUrl = this.defaultValues.productImageUrl;
+                }
             }
         } else {
             if (!data.productImageUrl) {
@@ -405,6 +474,36 @@ class ProductForm {
         return data;
     }
     
+    async uploadImage(file, imageType) {
+        try {
+            const formData = new FormData();
+            formData.append('image', file);
+            
+            const response = await fetch('/api/upload', {
+                method: 'POST',
+                body: formData
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                console.log(`✅ ${imageType} image uploaded successfully:`, result.imageUrl);
+                return result.imageUrl;
+            } else {
+                throw new Error(result.message || 'فشل في رفع الصورة');
+            }
+            
+        } catch (error) {
+            console.error(`❌ Error uploading ${imageType} image:`, error);
+            this.showMessage('error', `خطأ في رفع صورة ${imageType === 'user' ? 'المستخدم' : 'المنتج'}: ${error.message}`);
+            throw error;
+        }
+    }
+
     fileToBase64(file) {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
