@@ -43,20 +43,8 @@ class ProductForm {
             return `${window.location.protocol}//${window.location.host}`;
         }
         
-        // For production, you need to set your backend server URL
-        // Replace this with your actual backend server URL when deployed
-        const BACKEND_URL = 'https://ugcn8n.netlify.app/'; // e.g., 'https://your-app.railway.app'
-        
-        // if (BACKEND_URL === 'https://ugcn8n.netlify.app/') {
-        //     console.error('❌ BACKEND URL NOT CONFIGURED! This app requires a Node.js backend server.');
-        //     console.error('📋 Deploy options:');
-        //     console.error('   1. Railway: https://railway.app (recommended)');
-        //     console.error('   2. Render: https://render.com');
-        //     console.error('   3. Heroku: https://heroku.com');
-        //     console.error('💡 Then update BACKEND_URL in script.js with your deployed backend URL');
-        //     throw new Error('Backend server URL not configured. Please deploy the backend and update BACKEND_URL in script.js');
-        // }
-        
+        // For production, use the Netlify URL
+        const BACKEND_URL = 'https://ugcn8n.netlify.app';
         return BACKEND_URL;
     }
     
