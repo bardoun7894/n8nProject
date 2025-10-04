@@ -10,10 +10,6 @@ class ProductForm {
         this.errorMessage = document.getElementById('errorMessage');
         this.errorText = document.getElementById('errorText');
         
-        // Image mode tracking
-        this.userImageMode = 'file'; // Default to file upload
-        this.productImageMode = 'file'; // Default to file upload
-        
         // Store uploaded image URLs
         this.uploadedUserImageUrl = null;
         this.uploadedProductImageUrl = null;
@@ -22,12 +18,10 @@ class ProductForm {
         this.webhookUrl = 'https://bardouni12.app.n8n.cloud/webhook/ugc-video';
         
         // API Base URL - Configure this for your backend server
-        this.apiBaseUrl = this.getApiBaseUrl();
+        this.apiBaseUrl = window.location.origin;
         
         // Default values
         this.defaultValues = {
-            userImageUrl: '',
-            productImageUrl: '',
             productName: 'ساعة ذكية',
             userName: 'أحمد',
             email: 'test@example.com',
@@ -37,62 +31,28 @@ class ProductForm {
         this.init();
     }
     
-    getApiBaseUrl() {
-        // For local development, use the Express server
-        if (window.location.hostname === 'localhost') {
-            return 'http://localhost:4000';
-        }
-        // For production (Netlify), use Netlify Functions
-        return `${window.location.origin}/.netlify/functions`;
-    }
-    
     init() {
         this.loadDefaultValues();
         this.setupEventListeners();
-        this.setupImageTabs();
-        // Set file upload as default for both images
-        this.switchImageTab('user', 'file');
-        this.switchImageTab('product', 'file');
-        this.updateImagePreviews();
+        this.setupImageUploads();
     }
     
     loadDefaultValues() {
-        // Populate form with default values - check if elements exist first
+        // Populate form with default values
         const userName = document.getElementById('userName');
         const email = document.getElementById('email');
         const productName = document.getElementById('productName');
-        const userImageUrl = document.getElementById('userImageUrl');
-        const productImageUrl = document.getElementById('productImageUrl');
         const seed = document.getElementById('seed');
         
         if (userName) userName.value = this.defaultValues.userName || '';
         if (email) email.value = this.defaultValues.email || '';
         if (productName) productName.value = this.defaultValues.productName || '';
-        if (userImageUrl) userImageUrl.value = this.defaultValues.userImageUrl || '';
-        if (productImageUrl) productImageUrl.value = this.defaultValues.productImageUrl || '';
         if (seed) seed.value = this.defaultValues.seed || '';
     }
     
     setupEventListeners() {
         // Form submission
         this.form.addEventListener('submit', (e) => this.handleSubmit(e));
-        
-        // Image URL changes for live preview
-        document.getElementById('userImageUrl').addEventListener('input', (e) => {
-            this.updateImagePreview('user', e.target.value);
-        });
-        
-        document.getElementById('productImageUrl').addEventListener('input', (e) => {
-            this.updateImagePreview('product', e.target.value);
-        });
-        
-        // File input listeners
-        document.getElementById('userImageFile').addEventListener('change', (e) => {
-            this.handleFileUpload(e, 'user');
-        });
-        document.getElementById('productImageFile').addEventListener('change', (e) => {
-            this.handleFileUpload(e, 'product');
-        });
         
         // Real-time validation
         const inputs = this.form.querySelectorAll('input[required]');
@@ -102,213 +62,115 @@ class ProductForm {
         });
     }
     
-    setupImageTabs() {
-        // User image tabs
-        const userUrlTab = document.getElementById('userUrlTab');
-        const userUploadTab = document.getElementById('userUploadTab');
-        const productUrlTab = document.getElementById('productUrlTab');
-        const productUploadTab = document.getElementById('productUploadTab');
-        
-        if (userUrlTab) userUrlTab.addEventListener('click', () => this.switchImageTab('user', 'url'));
-        if (userUploadTab) userUploadTab.addEventListener('click', () => this.switchImageTab('user', 'file'));
-        
-        // Product image tabs
-        if (productUrlTab) productUrlTab.addEventListener('click', () => this.switchImageTab('product', 'url'));
-        if (productUploadTab) productUploadTab.addEventListener('click', () => this.switchImageTab('product', 'file'));
-    }
-
-    switchImageTab(imageType, mode) {
-        if (imageType === 'user') {
-            this.userImageMode = mode;
-            const urlTab = document.getElementById('userUrlTab');
-            const fileTab = document.getElementById('userUploadTab');
-            const urlContent = document.getElementById('userUrlContent');
-            const fileContent = document.getElementById('userUploadContent');
-            
-            if (mode === 'url') {
-                urlTab.className = 'flex-1 px-4 py-2 text-sm font-medium rounded-lg bg-blue-600 text-white shadow-sm transition-colors duration-200';
-                fileTab.className = 'flex-1 px-4 py-2 text-sm font-medium rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors duration-200';
-                urlContent.classList.remove('hidden');
-                fileContent.classList.add('hidden');
-            } else {
-                fileTab.className = 'flex-1 px-4 py-2 text-sm font-medium rounded-lg bg-blue-600 text-white shadow-sm transition-colors duration-200';
-                urlTab.className = 'flex-1 px-4 py-2 text-sm font-medium rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors duration-200';
-                fileContent.classList.remove('hidden');
-                urlContent.classList.add('hidden');
-            }
-        } else if (imageType === 'product') {
-            this.productImageMode = mode;
-            const urlTab = document.getElementById('productUrlTab');
-            const fileTab = document.getElementById('productUploadTab');
-            const urlContent = document.getElementById('productUrlContent');
-            const fileContent = document.getElementById('productUploadContent');
-            
-            if (mode === 'url') {
-                urlTab.className = 'flex-1 px-4 py-2 text-sm font-medium rounded-lg bg-purple-600 text-white shadow-sm transition-colors duration-200';
-                fileTab.className = 'flex-1 px-4 py-2 text-sm font-medium rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors duration-200';
-                urlContent.classList.remove('hidden');
-                fileContent.classList.add('hidden');
-            } else {
-                fileTab.className = 'flex-1 px-4 py-2 text-sm font-medium rounded-lg bg-purple-600 text-white shadow-sm transition-colors duration-200';
-                urlTab.className = 'flex-1 px-4 py-2 text-sm font-medium rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors duration-200';
-                fileContent.classList.remove('hidden');
-                urlContent.classList.add('hidden');
-            }
-        }
-    }
-
-    async handleFileUpload(event, mode) {
-        const file = event.target.files[0];
-        if (!file) return;
-        
-        console.log(`🔄 Starting file upload for ${mode} mode:`, file.name);
-        
-        if (!this.validateFile(file)) {
-            return;
-        }
-
-        try {
-            // Show immediate preview with local file
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                console.log(`📷 Showing immediate preview for ${mode}:`, file.name);
-                this.updateImagePreview(mode, e.target.result);
-            };
-            reader.readAsDataURL(file);
-            
-            // Show loading state
-            this.showMessage('جاري رفع الصورة...', 'info');
-            
-            // Upload the image
-            const imageUrl = await this.uploadImage(file, mode);
-            
-            if (imageUrl) {
-                // Store the uploaded URL
-                if (mode === 'user') {
-                    this.uploadedUserImageUrl = imageUrl;
-                    console.log('✅ User image uploaded successfully:', imageUrl);
-                    console.log('📁 User image URL path:', imageUrl);
-                    // Also update the URL input field if in URL mode
-                    const userUrlInput = document.getElementById('userImageUrl');
-                    if (userUrlInput) userUrlInput.value = imageUrl;
-                } else if (mode === 'product') {
-                    this.uploadedProductImageUrl = imageUrl;
-                    console.log('✅ Product image uploaded successfully:', imageUrl);
-                    console.log('📁 Product image URL path:', imageUrl);
-                    // Also update the URL input field if in URL mode
-                    const productUrlInput = document.getElementById('productImageUrl');
-                    if (productUrlInput) productUrlInput.value = imageUrl;
+    setupImageUploads() {
+        // Setup user image upload
+        const userImageInput = document.getElementById('userImageFile');
+        if (userImageInput) {
+            userImageInput.addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    // Show loading state
+                    this.showMessage('جاري رفع صورة المستخدم...', 'info');
+                    
+                    try {
+                        // Upload the image
+                        const imageUrl = await this.uploadImage(file);
+                        if (imageUrl) {
+                            // Store the URL
+                            this.uploadedUserImageUrl = imageUrl;
+                            // Update preview
+                            this.updateImagePreview('user', imageUrl);
+                            // Store URL in hidden input
+                            const userImageUrlInput = document.getElementById('userImageUrl');
+                            if (userImageUrlInput) userImageUrlInput.value = imageUrl;
+                            
+                            this.showMessage('تم رفع صورة المستخدم بنجاح!', 'success');
+                        }
+                    } catch (error) {
+                        console.error('Error uploading user image:', error);
+                        this.showMessage('حدث خطأ أثناء رفع صورة المستخدم', 'error');
+                    }
                 }
-                
-                // Update preview with the uploaded image URL (force update)
-                console.log(`🔄 Updating preview with final uploaded URL for ${mode}:`, imageUrl);
-                this.updateImagePreview(mode, imageUrl);
-                
-                // Force another update after a brief delay to ensure it takes effect
-                setTimeout(() => {
-                    console.log(`🔄 Final preview update for ${mode}:`, imageUrl);
-                    this.updateImagePreview(mode, imageUrl);
-                }, 500);
-                
-                this.showMessage('تم رفع الصورة بنجاح!', 'success');
-                
-                console.log(`📊 Current uploaded URLs:`, {
-                    userImage: this.uploadedUserImageUrl,
-                    productImage: this.uploadedProductImageUrl
-                });
-            }
-        } catch (error) {
-            console.error(`❌ Error uploading ${mode} image:`, error);
-            this.showMessage('حدث خطأ أثناء رفع الصورة', 'error');
+            });
         }
-    }
-
-    previewSelectedFile(event, type) {
-        const file = event.target.files[0];
-        if (file && this.validateFile(file)) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                console.log(`📷 Previewing selected ${type} file:`, file.name);
-                this.updateImagePreview(type, e.target.result);
-            };
-            reader.readAsDataURL(file);
+        
+        // Setup product image upload
+        const productImageInput = document.getElementById('productImageFile');
+        if (productImageInput) {
+            productImageInput.addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    // Show loading state
+                    this.showMessage('جاري رفع صورة المنتج...', 'info');
+                    
+                    try {
+                        // Upload the image
+                        const imageUrl = await this.uploadImage(file);
+                        if (imageUrl) {
+                            // Store the URL
+                            this.uploadedProductImageUrl = imageUrl;
+                            // Update preview
+                            this.updateImagePreview('product', imageUrl);
+                            // Store URL in hidden input
+                            const productImageUrlInput = document.getElementById('productImageUrl');
+                            if (productImageUrlInput) productImageUrlInput.value = imageUrl;
+                            
+                            this.showMessage('تم رفع صورة المنتج بنجاح!', 'success');
+                        }
+                    } catch (error) {
+                        console.error('Error uploading product image:', error);
+                        this.showMessage('حدث خطأ أثناء رفع صورة المنتج', 'error');
+                    }
+                }
+            });
         }
-    }
-
-    validateFile(file) {
-        // Validate file type
-        if (!file.type.startsWith('image/')) {
-            this.showMessage('يرجى اختيار ملف صورة صالح', 'error');
-            return false;
-        }
-
-        // Validate file size (max 5MB)
-        if (file.size > 5 * 1024 * 1024) {
-            this.showMessage('حجم الملف كبير جداً. يرجى اختيار صورة أصغر من 5 ميجابايت', 'error');
-            return false;
-        }
-
-        return true;
     }
     
-    updateImagePreviews() {
-        // Update both image previews on load
-        this.updateImagePreview('user', this.defaultValues.userImageUrl);
-        this.updateImagePreview('product', this.defaultValues.productImageUrl);
+    async uploadImage(file) {
+        try {
+            const formData = new FormData();
+            formData.append('image', file);
+            
+            const uploadUrl = `${this.apiBaseUrl}/api/upload`;
+            
+            const response = await fetch(uploadUrl, {
+                method: 'POST',
+                body: formData
+            });
+            
+            if (!response.ok) {
+                throw new Error(`Upload failed: ${response.status}`);
+            }
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                return result.imageUrl;
+            } else {
+                throw new Error(result.message || 'فشل في رفع الصورة');
+            }
+        } catch (error) {
+            console.error('Upload error:', error);
+            throw error;
+        }
     }
     
     updateImagePreview(type, url) {
         const previewContainer = document.getElementById(`${type}ImagePreview`);
         const previewImg = document.getElementById(`${type}PreviewImg`);
-        const placeholderUrls = {
-            user: 'https://via.placeholder.com/120x120/e5e7eb/6b7280?text=صورة+المستخدم',
-            product: 'https://via.placeholder.com/200x150/e5e7eb/6b7280?text=صورة+المنتج'
-        };
         
-        console.log(`🖼️ Updating ${type} image preview with URL:`, url);
+        if (!previewContainer || !previewImg) return;
         
-        if (!previewContainer || !previewImg) {
-            console.error(`❌ Preview elements not found: ${type}ImagePreview or ${type}PreviewImg`);
-            return;
-        }
-        
-        if (url && this.isValidUrl(url)) {
-            console.log(`✅ Valid URL detected for ${type} image:`, url);
-            // Test if image loads successfully
-            const img = new Image();
-            img.onload = () => {
-                console.log(`✅ Image loaded successfully for ${type}:`, url);
-                previewImg.src = url;
-                previewImg.classList.remove('opacity-50');
-                previewContainer.classList.remove('hidden'); // Show the preview container
-            };
-            img.onerror = () => {
-                console.log(`❌ Image failed to load for ${type}:`, url);
-                previewImg.src = placeholderUrls[type];
-                previewImg.classList.add('opacity-50');
-                previewContainer.classList.remove('hidden'); // Show the preview container even for placeholders
-            };
-            img.src = url;
+        if (url) {
+            previewImg.src = url;
+            previewContainer.classList.remove('hidden');
         } else {
-            console.log(`⚠️ Invalid or empty URL for ${type}, using placeholder:`, url);
-            previewImg.src = placeholderUrls[type];
-            previewImg.classList.remove('opacity-50');
-            previewContainer.classList.add('hidden'); // Hide container for empty URLs
-        }
-    }
-    
-    isValidUrl(string) {
-        try {
-            new URL(string);
-            return true;
-        } catch (_) {
-            return false;
+            previewContainer.classList.add('hidden');
         }
     }
     
     validateField(field) {
         const value = field.value.trim();
-        const fieldName = field.name;
         let isValid = true;
         let errorMessage = '';
         
@@ -322,19 +184,11 @@ class ProductForm {
         }
         
         // Email validation
-        if (fieldName === 'email' && value) {
+        if (field.name === 'email' && value) {
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(value)) {
                 isValid = false;
                 errorMessage = 'يرجى إدخال بريد إلكتروني صحيح';
-            }
-        }
-        
-        // URL validation
-        if ((fieldName === 'userImageUrl' || fieldName === 'productImageUrl') && value) {
-            if (!this.isValidUrl(value)) {
-                isValid = false;
-                errorMessage = 'يرجى إدخال رابط صحيح';
             }
         }
         
@@ -346,8 +200,8 @@ class ProductForm {
     }
     
     showFieldError(field, message) {
-        field.classList.add('border-red-500', 'focus:ring-red-500', 'focus:border-red-500');
-        field.classList.remove('border-gray-300', 'focus:ring-primary-500', 'focus:border-primary-500');
+        field.classList.add('border-red-500');
+        field.classList.remove('border-gray-300');
         
         const errorElement = field.parentNode.querySelector('.error-message');
         if (errorElement) {
@@ -357,8 +211,8 @@ class ProductForm {
     }
     
     clearFieldError(field) {
-        field.classList.remove('border-red-500', 'focus:ring-red-500', 'focus:border-red-500');
-        field.classList.add('border-gray-300', 'focus:ring-primary-500', 'focus:border-primary-500');
+        field.classList.remove('border-red-500');
+        field.classList.add('border-gray-300');
         
         const errorElement = field.parentNode.querySelector('.error-message');
         if (errorElement) {
@@ -389,31 +243,18 @@ class ProductForm {
             isValid = false;
         }
         
-        // Validate user image
-        if (this.userImageMode === 'url') {
-            const userImageUrl = document.getElementById('userImageUrl');
-            if (userImageUrl && userImageUrl.value.trim() && !this.isValidUrl(userImageUrl.value.trim())) {
-                this.showFieldError(userImageUrl, 'يرجى إدخال رابط صالح للصورة');
-                isValid = false;
-            }
-        } else {
+        // Validate images
+        if (!this.uploadedUserImageUrl) {
             const userImageFile = document.getElementById('userImageFile');
-            if (userImageFile && userImageFile.files.length === 0) {
+            if (userImageFile) {
                 this.showFieldError(userImageFile, 'يرجى اختيار صورة للشخص');
                 isValid = false;
             }
         }
         
-        // Validate product image
-        if (this.productImageMode === 'url') {
-            const productImageUrl = document.getElementById('productImageUrl');
-            if (productImageUrl && productImageUrl.value.trim() && !this.isValidUrl(productImageUrl.value.trim())) {
-                this.showFieldError(productImageUrl, 'يرجى إدخال رابط صالح للصورة');
-                isValid = false;
-            }
-        } else {
+        if (!this.uploadedProductImageUrl) {
             const productImageFile = document.getElementById('productImageFile');
-            if (productImageFile && productImageFile.files.length === 0) {
+            if (productImageFile) {
                 this.showFieldError(productImageFile, 'يرجى اختيار صورة للمنتج');
                 isValid = false;
             }
@@ -446,13 +287,13 @@ class ProductForm {
                 this.submitBtn.disabled = false;
                 this.submitBtn.classList.remove('opacity-75', 'cursor-not-allowed');
             }
-            if (this.submitText) this.submitText.textContent = 'اشترِ الآن';
+            if (this.submitText) this.submitText.textContent = 'أنشئ الفيديو الآن';
             if (this.submitIcon) this.submitIcon.classList.remove('hidden');
             if (this.loadingSpinner) this.loadingSpinner.classList.add('hidden');
         }
     }
     
-    showMessage(type, message) {
+    showMessage(message, type) {
         // Hide all messages first
         this.successMessage.classList.add('hidden');
         this.errorMessage.classList.add('hidden');
@@ -471,15 +312,12 @@ class ProductForm {
                 this.errorMessage.classList.add('hidden');
             }, 8000);
         }
-        
-        // Scroll to top to show message
-        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
     
-    async getFormData() {
-        const formData = new FormData(this.form);
-        const data = {};
+    async handleSubmit(event) {
+        event.preventDefault();
         
+<<<<<<< HEAD
         // Convert FormData to regular object
         for (let [key, value] of formData) {
             if (typeof value === 'string') {
@@ -612,22 +450,22 @@ class ProductForm {
         e.preventDefault();
         
         // Validate form
+=======
+>>>>>>> 68a670ecd95fb411289868fe405e03818f9bd562
         if (!this.validateForm()) {
-            this.showMessage('error', 'يرجى تصحيح الأخطاء في النموذج');
             return;
         }
         
-        // Set loading state
         this.setLoadingState(true);
         
         try {
-            // Get form data (now async to handle file conversion)
-            const data = await this.getFormData();
+            const formData = new FormData(this.form);
+            const data = Object.fromEntries(formData.entries());
             
-            console.log('🚀 Submitting to:', this.webhookUrl);
-            console.log('📦 Data:', JSON.stringify(data, null, 2));
+            // Add uploaded image URLs
+            data.userImageUrl = this.uploadedUserImageUrl;
+            data.productImageUrl = this.uploadedProductImageUrl;
             
-            // Submit to webhook
             const response = await fetch(this.webhookUrl, {
                 method: 'POST',
                 headers: {
@@ -636,48 +474,23 @@ class ProductForm {
                 body: JSON.stringify(data)
             });
             
-            if (response.ok) {
-                // Success
-                console.log('✅ Success! Status:', response.status);
-                this.showMessage('success');
-                
-                // Optional: Reset form after successful submission
-                // this.form.reset();
-                // this.populateDefaultValues();
-                // this.updateImagePreviews();
-            } else {
-                // Handle HTTP errors
-                let errorMessage = 'حدث خطأ في إرسال الطلب';
-                
-                try {
-                    const errorData = await response.json();
-                    if (errorData.message) {
-                        errorMessage = `خطأ: ${errorData.message}`;
-                    }
-                } catch (parseError) {
-                    console.error('Error parsing error response:', parseError);
-                }
-                
-                console.error('❌ HTTP Error:', response.status, response.statusText);
-                this.showMessage('error', errorMessage);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
+            
+            const result = await response.json();
+            
+            this.showMessage('تم إرسال النموذج بنجاح!', 'success');
+            this.form.reset();
+            this.uploadedUserImageUrl = null;
+            this.uploadedProductImageUrl = null;
+            this.updateImagePreview('user', null);
+            this.updateImagePreview('product', null);
             
         } catch (error) {
-            console.error('🔥 Network Error:', error.message);
-            
-            let errorMessage = 'حدث خطأ في الاتصال بالخادم';
-            
-            if (error.name === 'TypeError' && error.message.includes('fetch')) {
-                errorMessage = 'تعذر الاتصال بالخادم. يرجى التحقق من اتصال الإنترنت';
-            } else if (error.message.includes('CORS')) {
-                errorMessage = 'خطأ في إعدادات الخادم (CORS). يرجى التحقق من إعدادات الخادم';
-            } else if (error.message.includes('NetworkError')) {
-                errorMessage = 'خطأ في الشبكة. يرجى التحقق من اتصال الإنترنت';
-            }
-            
-            this.showMessage('error', errorMessage + ' - ' + error.message);
+            console.error('Form submission error:', error);
+            this.showMessage('حدث خطأ أثناء إرسال النموذج', 'error');
         } finally {
-            // Remove loading state
             this.setLoadingState(false);
         }
     }
