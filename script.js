@@ -572,59 +572,28 @@ class ProductForm {
             const uploadUrl = `${this.apiBaseUrl}/api/upload`;
             console.log('🔗 Upload URL:', uploadUrl);
             
-            console.log('📦 Request body:', {
-                formData: {
-                    entries: Array.from(formData.entries()).map(([key, value]) => ({
-                        key,
-                        value: value instanceof File ? {
-                            name: value.name,
-                            type: value.type,
-                            size: value.size
-                        } : value
-                    }))
-                }
-            });
-            
             const response = await fetch(uploadUrl, {
                 method: 'POST',
                 body: formData
             });
             
-            console.log('📥 Response status:', response.status);
-            console.log('📥 Response headers:', Object.fromEntries(response.headers.entries()));
-            
-            const responseText = await response.text();
-            console.log('📥 Raw response:', responseText);
-            
             if (!response.ok) {
-                console.error(`❌ Upload failed with status ${response.status}:`, responseText);
-                throw new Error(`HTTP error! status: ${response.status}\nResponse: ${responseText}`);
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
             
-            let result;
-            try {
-                result = JSON.parse(responseText);
-                console.log(`📥 Parsed response:`, result);
-            } catch (parseError) {
-                console.error('❌ Failed to parse response as JSON:', parseError);
-                throw new Error(`Invalid JSON response: ${responseText}`);
-            }
+            const result = await response.json();
             
             if (result.success) {
-                console.log(`✅ ${imageType} image uploaded successfully:`, result.imageUrl);
-                return result.imageUrl;
+                // Return the full URL for the image
+                const imageUrl = result.imageUrl;
+                console.log(`✅ ${imageType} image uploaded successfully, URL:`, imageUrl);
+                return imageUrl; // Return the full URL from the server
             } else {
                 throw new Error(result.message || 'فشل في رفع الصورة');
             }
             
         } catch (error) {
-            console.error(`❌ Error uploading ${imageType} image:`, {
-                error: {
-                    name: error.name,
-                    message: error.message,
-                    stack: error.stack
-                }
-            });
+            console.error(`❌ Error uploading ${imageType} image:`, error);
             this.showMessage('error', `خطأ في رفع صورة ${imageType === 'user' ? 'المستخدم' : 'المنتج'}: ${error.message}`);
             throw error;
         }

@@ -13,6 +13,7 @@ const PORT = process.env.PORT || 4000;
 app.use(cors());
 app.use(express.json());
 app.use(express.static(__dirname)); // Serve static files from current directory
+app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); // Serve uploads directory
 
 // Create uploads directory if it doesn't exist
 const uploadsDir = path.join(__dirname, 'uploads');
@@ -113,8 +114,8 @@ app.post('/api/upload', upload.single('image'), (req, res) => {
                     });
                 }
 
-                // Return the image URL
-                const imageUrl = `${req.protocol}://${req.get('host')}/api/images/${imageData.id}`;
+                // Return the full URL for the image
+                const imageUrl = `${req.protocol}://${req.get('host')}/uploads/${imageData.filename}`;
                 
                 console.log(`📸 Image uploaded: ${imageData.original_name} -> ${imageUrl}`);
                 
